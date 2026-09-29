@@ -1,231 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MITS Attendance Dashboard</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-     
-        }
-        .container { max-width: 1100px; margin: 0 auto; }
-        
-        /* Top Overview Section */
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        h2 { color: #38bdf8; font-size: 1.1rem; margin-bottom: 1rem; }
-        .stat-val { font-size: 2.2rem; font-weight: bold; color: #10b981; }
-        .info-row { margin-bottom: 0.5rem; color: #cbd5e1; }
-        .info-row strong { color: #94a3b8; }
-
-        /* Courses Grid Section */
-        .section-title {
-            font-size: 1.4rem;
-            margin-bottom: 1rem;
-            color: #f1f5f9;
-            border-bottom: 2px solid #334155;
-            padding-bottom: 0.5rem;
-        }
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        /* Individual Course Card */
-        .course-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .course-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-        }
-        .course-name { font-size: 1.05rem; font-weight: 600; color: #f8fafc; }
-        .course-code { font-size: 0.8rem; color: #94a3b8; margin-top: 0.2rem; }
-        .faculty-name { font-size: 0.85rem; color: #cbd5e1; margin-bottom: 1rem; }
-        
-        /* Attendance Progress Bar */
-        .progress-container {
-            background: #0f172a;
-            border-radius: 9999px;
-            height: 10px;
-            width: 100%;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-        .progress-bar {
-            height: 100%;
-            border-radius: 9999px;
-            transition: width 0.4s ease;
-        }
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-top: 0.5rem;
-        }
-        
-        /* Status Badges */
-        .badge {
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            align-self: flex-end;
-        }
-        .badge-green { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
-        .badge-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
-        .progress{
-            display: flex;
-            flex-direction: column;
-        }
-        @media(max-width:380px){
-            .container{
-                padding: 1rem;
-            }
-        }
-        .navbar{
-            background-color: #1e293b;
-            max-height: 60px;
-            height: 100%;
-            display: flex;
-            padding: 1rem;   
-            align-items: center;
-            display: flex;
-            justify-content: space-between;
-            
-        }
-        .container{
-                   padding: 1rem;
-        }
-        img{
-            height: 100%;
-            max-width: 100%;
-        }
-        .logo{
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            width: auto;
-        }
-        .logo-img{
-            object-fit: contain;
-            height: 50px;
-            width: auto;
-        }
-        .logo-heading{
-            display: flex;
-            flex-direction: column;
-            font-size: 1.5em;
-        }
-        .logo-heading span{
-            font-size: 0.4em;
-        }
-        
-        .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #0f172a;
-    color: #38bdf8;
-    border: 1px solid #334155;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .btn:hover {
-    background-color: #1e293b;
-    border-color: #38bdf8;
-    color: #f8fafc;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
-    transform: translateY(-1px);
-}
-.btn:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="logo">
-            <div class="logo-img">
-                <img src="https://ams.mitsgwalior.in/images/mits.png" alt="">
-
-            </div>
-            <h1 class="logo-heading">MMS <span>Mohit Management system</span></h1>
-         
-            
-        </div>
-           <div class="options">
-                <button class="btn" id="bunkify">Bunkify</button>
-            </div>
-
-    </nav>
-
-    <div class="container">
-        <h1></h1>
-        <!-- Top Summary Cards -->
-        <div class="overview-grid">
-            <div class="card">
-                <h2>Student Profile</h2>
-                <div class="info-row"><strong>Name:</strong> <span id="s-name">Loading...</span></div>
-                <div class="info-row"><strong>Email:</strong> <span id="s-email">Loading...</span></div>
-                <div class="info-row"><strong>Enrollment:</strong> <span id="s-enroll">Loading...</span></div>
-            </div>
-            <div class="card">
-                <h2>Overall Attendance</h2>
-                <div class="stat-val" id="s-pct">0%</div>
-                <div class="info-row" style="margin-top:0.5rem;">
-                    Attended <strong id="s-present" style="color:#fff;">0</strong> / <span id="s-total">0</span> Total Classes
-                </div>
-            </div>
-        </div>
-
-        <!-- Enrolled Courses Header -->
-        <h2 class="section-title">Course-wise Attendance</h2>
-        
-        <!-- Container for Dynamic Course Cards -->
-        <div class="courses-grid" id="courses-container">
-            <p style="color: #94a3b8;">Loading course attendance data...</p>
-        </div>
-    </div>
-
-    <script>
 let dashboardData = null;
 
 async function fetchDashboard() {
     try {
-        // Update URL to your live Render backend if testing on cloud
+        // Make sure to use your live HTTPS Render URL for phone access
         const res = await fetch('https://mohit-mangment-system.onrender.com/api/dashboard-summary');
         dashboardData = await res.json();
 
@@ -234,9 +11,10 @@ async function fetchDashboard() {
             return;
         }
 
-        // Initialize bunked count for each course object
+        // Initialize extra attended and bunked counts for each course
         if (dashboardData.courses) {
             dashboardData.courses.forEach(course => {
+                course.attendedCount = 0;
                 course.bunkedCount = 0;
             });
         }
@@ -253,6 +31,16 @@ async function fetchDashboard() {
     }
 }
 
+// Handler to attend an extra class (+1 present, +1 total)
+function attendCourse(courseId) {
+    const course = dashboardData.courses.find(c => c.course_id === courseId);
+    if (course) {
+        course.attendedCount = (course.attendedCount || 0) + 1;
+        renderDashboard();
+    }
+}
+
+// Handler to bunk an extra class (+0 present, +1 total)
 function bunkCourse(courseId) {
     const course = dashboardData.courses.find(c => c.course_id === courseId);
     if (course) {
@@ -274,13 +62,17 @@ function renderDashboard() {
     courses.forEach(course => {
         const originalPresent = parseInt(course.present_classes || 0);
         const originalTotal = parseInt(course.total_classes || 0);
-        const bunked = course.bunkedCount || 0;
+        
+        const extraAttended = course.attendedCount || 0;
+        const extraBunked = course.bunkedCount || 0;
 
-        const newPresent = originalPresent;
-        const newTotal = originalTotal + bunked;
+        // Calculate simulated attendance
+        const newPresent = originalPresent + extraAttended;
+        const newTotal = originalTotal + extraAttended + extraBunked;
         const newPercentage = newTotal > 0 ? (newPresent / newTotal) * 100 : 0;
         const isSafe = newPercentage >= 75;
 
+        // Accumulate overall aggregates
         updatedPresentClasses += newPresent;
         updatedTotalClasses += newTotal;
 
@@ -288,14 +80,19 @@ function renderDashboard() {
         card.className = 'course-card';
         card.innerHTML = `
             <div>
-                <div class="course-header">
+                <div class="course-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
                     <div>
                         <div class="course-name">${course.course_name}</div>
                         <div class="course-code">${course.course_code} • ${course.course_type.toUpperCase()}</div>
                     </div>
-                    <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="bunkCourse(${course.course_id})">
-                        + Bunk ${bunked > 0 ? `(${bunked})` : ''}
-                    </button>
+                    <div style="display: flex; gap: 0.3rem;">
+                        <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; color: #10b981; border-color: #10b981;" onclick="attendCourse(${course.course_id})">
+                            + Attend ${extraAttended > 0 ? `(${extraAttended})` : ''}
+                        </button>
+                        <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; color: #ef4444; border-color: #ef4444;" onclick="bunkCourse(${course.course_id})">
+                            + Bunk ${extraBunked > 0 ? `(${extraBunked})` : ''}
+                        </button>
+                    </div>
                 </div>
                 <div class="faculty-name">👨‍🏫 ${course.faculty_name}</div>
             </div>
@@ -316,7 +113,7 @@ function renderDashboard() {
         coursesContainer.appendChild(card);
     });
 
-    // Update Overall Summary Header
+    // Recalculate Top Overview Card
     const overallPercentage = updatedTotalClasses > 0 ? ((updatedPresentClasses / updatedTotalClasses) * 100).toFixed(2) : 0;
     document.getElementById('s-pct').textContent = `${overallPercentage}%`;
     document.getElementById('s-present').textContent = updatedPresentClasses;
@@ -324,6 +121,3 @@ function renderDashboard() {
 }
 
 fetchDashboard();
-    </script>
-</body>
-</html>
