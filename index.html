@@ -10,7 +10,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0f172a;
             color: #f8fafc;
-            padding: 2rem;
+     
         }
         .container { max-width: 1100px; margin: 0 auto; }
         
@@ -95,12 +95,102 @@
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
+            align-self: flex-end;
         }
         .badge-green { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
         .badge-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+        .progress{
+            display: flex;
+            flex-direction: column;
+        }
+        @media(max-width:380px){
+            .container{
+                padding: 1rem;
+            }
+        }
+        .navbar{
+            background-color: #1e293b;
+            max-height: 60px;
+            height: 100%;
+            display: flex;
+            padding: 1rem;   
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            
+        }
+        .container{
+                   padding: 1rem;
+        }
+        img{
+            height: 100%;
+            max-width: 100%;
+        }
+        .logo{
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: auto;
+        }
+        .logo-img{
+            object-fit: contain;
+            height: 50px;
+            width: auto;
+        }
+        .logo-heading{
+            display: flex;
+            flex-direction: column;
+            font-size: 1.5em;
+        }
+        .logo-heading span{
+            font-size: 0.4em;
+        }
+        
+        .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #0f172a;
+    color: #38bdf8;
+    border: 1px solid #334155;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .btn:hover {
+    background-color: #1e293b;
+    border-color: #38bdf8;
+    color: #f8fafc;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    transform: translateY(-1px);
+}
+.btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-img">
+                <img src="https://ams.mitsgwalior.in/images/mits.png" alt="">
+
+            </div>
+            <h1 class="logo-heading">MMS <span>Mohit Management system</span></h1>
+         
+            
+        </div>
+           <div class="options">
+                <button class="btn" id="bunkify">Bunkify</button>
+            </div>
+
+    </nav>
 
     <div class="container">
         <h1></h1>
@@ -131,71 +221,109 @@
     </div>
 
     <script>
-        async function fetchDashboard() {
-            try {
-                const res = await fetch('https://mohit-mangment-system.onrender.com/api/dashboard-summary');
-                const data = await res.json();
+let dashboardData = null;
 
-                if (data.error) {
-                    console.error('API Error:', data.error);
-                    return;
-                }
+async function fetchDashboard() {
+    try {
+        // Update URL to your live Render backend if testing on cloud
+        const res = await fetch('http://localhost:5000/api/dashboard-summary');
+        dashboardData = await res.json();
 
-                // 1. Populate Profile Data
-                document.getElementById('s-name').textContent = data.student?.name || 'N/A';
-                document.getElementById('s-email').textContent = data.student?.email || 'N/A';
-                document.getElementById('s-enroll').textContent = data.student?.enrollment || 'N/A';
-
-                // 2. Populate Statistics Data
-                document.getElementById('s-pct').textContent = (data.statistics?.overall_percentage || 0) + '%';
-                document.getElementById('s-present').textContent = data.statistics?.present_classes || 0;
-                document.getElementById('s-total').textContent = data.statistics?.total_classes || 0;
-
-                // 3. Render Individual Course Cards
-                const coursesContainer = document.getElementById('courses-container');
-                coursesContainer.innerHTML = ''; // Clear placeholder text
-
-                const courses = data.courses || [];
-                
-                courses.forEach(course => {
-                    const percentage = parseFloat(course.attendance_percentage || 0);
-                    const isSafe = percentage >= 75; // College 75% threshold rule
-                    
-                    const card = document.createElement('div');
-                    card.className = 'course-card';
-                    card.innerHTML = `
-                        <div>
-                            <div class="course-header">
-                                <div>
-                                    <div class="course-name">${course.course_name}</div>
-                                    <div class="course-code">${course.course_code} • ${course.course_type.toUpperCase()}</div>
-                                </div>
-                                <span class="badge ${isSafe ? 'badge-green' : 'badge-red'}">
-                                    ${percentage.toFixed(1)}%
-                                </span>
-                            </div>
-                            <div class="faculty-name">👨‍🏫 ${course.faculty_name}</div>
-                        </div>
-
-                        <div>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: ${percentage}%; background-color: ${isSafe ? '#10b981' : '#ef4444'};"></div>
-                            </div>
-                            <div class="stats-row">
-                                <span>Attended: <strong>${course.present_classes}/${course.total_classes}</strong></span>
-                                <span>Sem: ${course.semester}</span>
-                            </div>
-                        </div>
-                    `;
-                    coursesContainer.appendChild(card);
-                });
-
-            } catch (err) {
-                console.error('Failed to load dashboard:', err);
-            }
+        if (dashboardData.error) {
+            console.error('API Error:', dashboardData.error);
+            return;
         }
 
-        fetchDashboard();
+        // Initialize bunked count for each course object
+        if (dashboardData.courses) {
+            dashboardData.courses.forEach(course => {
+                course.bunkedCount = 0;
+            });
+        }
+
+        // Populate Profile Data
+        document.getElementById('s-name').textContent = dashboardData.student?.name || 'N/A';
+        document.getElementById('s-email').textContent = dashboardData.student?.email || 'N/A';
+        document.getElementById('s-enroll').textContent = dashboardData.student?.enrollment || 'N/A';
+
+        renderDashboard();
+
+    } catch (err) {
+        console.error('Failed to load dashboard:', err);
+    }
+}
+
+function bunkCourse(courseId) {
+    const course = dashboardData.courses.find(c => c.course_id === courseId);
+    if (course) {
+        course.bunkedCount = (course.bunkedCount || 0) + 1;
+        renderDashboard();
+    }
+}
+
+function renderDashboard() {
+    if (!dashboardData) return;
+
+    const courses = dashboardData.courses || [];
+    let updatedTotalClasses = 0;
+    let updatedPresentClasses = 0;
+
+    const coursesContainer = document.getElementById('courses-container');
+    coursesContainer.innerHTML = '';
+
+    courses.forEach(course => {
+        const originalPresent = parseInt(course.present_classes || 0);
+        const originalTotal = parseInt(course.total_classes || 0);
+        const bunked = course.bunkedCount || 0;
+
+        const newPresent = originalPresent;
+        const newTotal = originalTotal + bunked;
+        const newPercentage = newTotal > 0 ? (newPresent / newTotal) * 100 : 0;
+        const isSafe = newPercentage >= 75;
+
+        updatedPresentClasses += newPresent;
+        updatedTotalClasses += newTotal;
+
+        const card = document.createElement('div');
+        card.className = 'course-card';
+        card.innerHTML = `
+            <div>
+                <div class="course-header">
+                    <div>
+                        <div class="course-name">${course.course_name}</div>
+                        <div class="course-code">${course.course_code} • ${course.course_type.toUpperCase()}</div>
+                    </div>
+                    <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="bunkCourse(${course.course_id})">
+                        + Bunk ${bunked > 0 ? `(${bunked})` : ''}
+                    </button>
+                </div>
+                <div class="faculty-name">👨‍🏫 ${course.faculty_name}</div>
+            </div>
+
+            <div class="progress">
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${Math.min(newPercentage, 100)}%; background-color: ${isSafe ? '#10b981' : '#ef4444'};"></div>
+                </div>
+                <span class="badge ${isSafe ? 'badge-green' : 'badge-red'}">
+                    ${newPercentage.toFixed(1)}%
+                </span>
+                <div class="stats-row">
+                    <span>Attended: <strong>${newPresent}/${newTotal}</strong></span>
+                    <span>Sem: ${course.semester}</span>
+                </div>
+            </div>
+        `;
+        coursesContainer.appendChild(card);
+    });
+
+    // Update Overall Summary Header
+    const overallPercentage = updatedTotalClasses > 0 ? ((updatedPresentClasses / updatedTotalClasses) * 100).toFixed(2) : 0;
+    document.getElementById('s-pct').textContent = `${overallPercentage}%`;
+    document.getElementById('s-present').textContent = updatedPresentClasses;
+    document.getElementById('s-total').textContent = updatedTotalClasses;
+}
+
+fetchDashboard();
     </script>
 </body>
 </html>
