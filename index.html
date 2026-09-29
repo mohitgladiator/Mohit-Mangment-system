@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITS Attendance Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 2rem;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        /* Top Overview Section */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        h2 { color: #38bdf8; font-size: 1.1rem; margin-bottom: 1rem; }
+        .stat-val { font-size: 2.2rem; font-weight: bold; color: #10b981; }
+        .info-row { margin-bottom: 0.5rem; color: #cbd5e1; }
+        .info-row strong { color: #94a3b8; }
+
+        /* Courses Grid Section */
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 0.5rem;
+        }
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Individual Course Card */
+        .course-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+        .course-name { font-size: 1.05rem; font-weight: 600; color: #f8fafc; }
+        .course-code { font-size: 0.8rem; color: #94a3b8; margin-top: 0.2rem; }
+        .faculty-name { font-size: 0.85rem; color: #cbd5e1; margin-bottom: 1rem; }
+        
+        /* Attendance Progress Bar */
+        .progress-container {
+            background: #0f172a;
+            border-radius: 9999px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.4s ease;
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+        
+        /* Status Badges */
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1></h1>
+        <!-- Top Summary Cards -->
+        <div class="overview-grid">
+            <div class="card">
+                <h2>Student Profile</h2>
+                <div class="info-row"><strong>Name:</strong> <span id="s-name">Loading...</span></div>
+                <div class="info-row"><strong>Email:</strong> <span id="s-email">Loading...</span></div>
+                <div class="info-row"><strong>Enrollment:</strong> <span id="s-enroll">Loading...</span></div>
+            </div>
+            <div class="card">
+                <h2>Overall Attendance</h2>
+                <div class="stat-val" id="s-pct">0%</div>
+                <div class="info-row" style="margin-top:0.5rem;">
+                    Attended <strong id="s-present" style="color:#fff;">0</strong> / <span id="s-total">0</span> Total Classes
+                </div>
+            </div>
+        </div>
+
+        <!-- Enrolled Courses Header -->
+        <h2 class="section-title">Course-wise Attendance</h2>
+        
+        <!-- Container for Dynamic Course Cards -->
+        <div class="courses-grid" id="courses-container">
+            <p style="color: #94a3b8;">Loading course attendance data...</p>
+        </div>
+    </div>
+
+    <script>
+        async function fetchDashboard() {
+            try {
+                const res = await fetch('http://localhost:5000/api/dashboard-summary');
+                const data = await res.json();
+
+                if (data.error) {
+                    console.error('API Error:', data.error);
+                    return;
+                }
+
+                // 1. Populate Profile Data
+                document.getElementById('s-name').textContent = data.student?.name || 'N/A';
+                document.getElementById('s-email').textContent = data.student?.email || 'N/A';
+                document.getElementById('s-enroll').textContent = data.student?.enrollment || 'N/A';
+
+                // 2. Populate Statistics Data
+                document.getElementById('s-pct').textContent = (data.statistics?.overall_percentage || 0) + '%';
+                document.getElementById('s-present').textContent = data.statistics?.present_classes || 0;
+                document.getElementById('s-total').textContent = data.statistics?.total_classes || 0;
+
+                // 3. Render Individual Course Cards
+                const coursesContainer = document.getElementById('courses-container');
+                coursesContainer.innerHTML = ''; // Clear placeholder text
+
+                const courses = data.courses || [];
+                
+                courses.forEach(course => {
+                    const percentage = parseFloat(course.attendance_percentage || 0);
+                    const isSafe = percentage >= 75; // College 75% threshold rule
+                    
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    card.innerHTML = `
+                        <div>
+                            <div class="course-header">
+                                <div>
+                                    <div class="course-name">${course.course_name}</div>
+                                    <div class="course-code">${course.course_code} • ${course.course_type.toUpperCase()}</div>
+                                </div>
+                                <span class="badge ${isSafe ? 'badge-green' : 'badge-red'}">
+                                    ${percentage.toFixed(1)}%
+                                </span>
+                            </div>
+                            <div class="faculty-name">👨‍🏫 ${course.faculty_name}</div>
+                        </div>
+
+                        <div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${percentage}%; background-color: ${isSafe ? '#10b981' : '#ef4444'};"></div>
+                            </div>
+                            <div class="stats-row">
+                                <span>Attended: <strong>${course.present_classes}/${course.total_classes}</strong></span>
+                                <span>Sem: ${course.semester}</span>
+                            </div>
+                        </div>
+                    `;
+                    coursesContainer.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error('Failed to load dashboard:', err);
+            }
+        }
+
+        fetchDashboard();
+    </script>
+</body>
+</html>
