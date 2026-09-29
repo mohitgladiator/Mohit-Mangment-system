@@ -133,7 +133,7 @@
     <script>
         async function fetchDashboard() {
             try {
-                const res = await fetch('http://localhost:5000/api/dashboard-summary');
+                const res = await fetch('https://mohit-mangment-system.onrender.com/api/dashboard-summary');
                 const data = await res.json();
 
                 if (data.error) {
