@@ -226,7 +226,7 @@ let dashboardData = null;
 async function fetchDashboard() {
     try {
         // Update URL to your live Render backend if testing on cloud
-        const res = await fetch('http://localhost:5000/api/dashboard-summary');
+        const res = await fetch('https://mohit-mangment-system.onrender.com/api/dashboard-summary');
         dashboardData = await res.json();
 
         if (dashboardData.error) {
