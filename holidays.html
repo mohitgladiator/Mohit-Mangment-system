@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1e293b">
+  <title>MP Holiday Calendar 2026 | MMS</title>
+  <style>
+    :root {
+      --page:#0f172a; --panel:#1e293b; --panel-2:#172235; --line:#334155;
+      --text:#f1f5f9; --muted:#94a3b8; --cyan:#38bdf8; --green:#10b981;
+      --closed:#10b981; --closed-bg:rgba(16,185,129,.16);
+      --restricted:#60a5fa; --restricted-bg:rgba(96,165,250,.16);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--page);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:inherit}
+    .topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:15px clamp(16px,4vw,42px);display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+    .brand-mark{width:42px;height:42px;border-radius:12px;background:#0f172a;border:1px solid var(--line);display:grid;place-items:center;color:var(--cyan);font-weight:800}
+    .brand strong{font-size:1.3rem;line-height:1.1;display:block}.brand small{color:#cbd5e1}
+    .back{border:1px solid var(--line);background:#0f172a;color:var(--cyan);padding:9px 14px;border-radius:10px;text-decoration:none;font-weight:650}
+    main{max-width:1200px;margin:0 auto;padding:30px 20px 50px}
+    .hero{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+    h1{margin:0;color:var(--cyan);font-size:clamp(1.7rem,3vw,2.3rem);line-height:1.2}
+    .subtitle{color:var(--muted);margin:8px 0 0}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    select,button{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+    button{cursor:pointer}button:hover,.back:hover{border-color:var(--cyan)}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+    .stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px}
+    .stat{padding:17px 19px}.stat span{display:block;color:var(--muted);font-size:.9rem}.stat strong{font-size:1.7rem}
+    .stat.closed strong{color:#34d399}.stat.restricted strong{color:#60a5fa}.stat.upcoming strong{color:var(--green)}
+    .layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(290px,1fr);gap:20px;align-items:start}
+    .panel{padding:20px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+    h2{font-size:1.2rem;margin:0}.month-label{color:var(--cyan);font-weight:750;font-size:1.15rem}
+    .weekdays,.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+    .weekday{text-align:center;color:var(--muted);font-size:.82rem;font-weight:700;padding:7px 0}
+    .day{position:relative;min-height:58px;border:1px solid transparent;border-radius:10px;background:#172235;color:var(--text);padding:7px 5px;display:flex;align-items:flex-start;justify-content:center}
+    .day.empty{background:transparent}.day:not(.empty):hover{border-color:var(--cyan)}
+    .day.today{outline:2px solid var(--cyan);outline-offset:1px}
+    .day.closed{background:var(--closed-bg);border-color:rgba(16,185,129,.5)}
+    .day.restricted{background:var(--restricted-bg);border-color:rgba(96,165,250,.5)}
+    .day .num{font-weight:650}.day .dot{position:absolute;bottom:6px;width:6px;height:6px;border-radius:50%;background:var(--cyan)}
+    .day.closed .dot{background:var(--closed)}.day.restricted .dot{background:var(--restricted)}
+    .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px;color:var(--muted);font-size:.88rem}
+    .legend span{display:inline-flex;align-items:center;gap:7px}.swatch{width:10px;height:10px;border-radius:3px}.swatch.closed{background:var(--closed)}.swatch.restricted{background:var(--restricted)}
+    .details{margin-top:18px;padding:14px;background:#111c2e;border:1px solid var(--line);border-radius:12px;min-height:76px}
+    .details strong{display:block;margin-bottom:4px}.details p{margin:0;color:var(--muted)}
+    .event-list{display:grid;gap:10px;max-height:580px;overflow:auto;padding-right:3px}
+    .event{display:flex;gap:12px;align-items:flex-start;padding:12px;background:#172235;border:1px solid var(--line);border-radius:12px}
+    .date-box{min-width:54px;text-align:center;padding:7px 5px;border-radius:9px;background:var(--closed-bg);color:#6ee7b7}
+    .event.restricted .date-box{background:var(--restricted-bg);color:#93c5fd}
+    .date-box small{display:block;font-size:.72rem;font-weight:800}.date-box b{font-size:1.2rem}
+    .event-name{font-weight:700}.event-meta{font-size:.82rem;color:var(--muted);margin-top:3px}
+    .tag{display:inline-block;font-size:.72rem;font-weight:750;border-radius:6px;padding:2px 7px;margin-top:5px}
+    .tag.closed{background:var(--closed-bg);color:#6ee7b7}.tag.restricted{background:var(--restricted-bg);color:#93c5fd}
+    .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.filter{font-size:.85rem;padding:7px 10px}.filter[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan)}
+    .note{color:var(--muted);font-size:.85rem;margin:20px 2px 0}
+    .empty-state{color:var(--muted);padding:18px;text-align:center;border:1px dashed var(--line);border-radius:12px}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}.event-list{max-height:none}.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}}
+    @media(max-width:480px){main{padding:22px 12px 35px}.topbar{padding:12px}.panel{padding:13px}.day{min-height:44px;font-size:.9rem}.weekdays,.days{gap:3px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:1.4rem}.hero{align-items:flex-start}.controls{width:100%}.controls select{flex:1}}
+  </style>
+  <style>
+  body{
+     padding-top: 85px; /* Keeps content from hiding under the fixed navbar */
+  }
+          .container{
+                padding: 1rem;
+            }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #1e293b;
+            display: flex;
+            padding: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+        .options{
+          display: flex;
+          gap: 0.1rem;
+        }
+        img{
+            height: 100%;
+            max-width: 100%;
+        }
+        .logo{
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: auto;
+        }
+        .logo-img{
+            object-fit: contain;
+            height: 50px;
+            width: auto;
+        }
+        .logo-heading{
+            display: flex;
+            flex-direction: column;
+            font-size: 1.5em;
+        }
+        .logo-heading span{
+            font-size: 0.4em;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #0f172a;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .btn:hover {
+            background-color: #1e293b;
+            border-color: #38bdf8;
+            color: #f8fafc;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+</style>
+</head>
+<body>
+ <nav class="navbar">
+        <div class="logo">
+            <div class="logo-img">
+                <img src="https://ams.mitsgwalior.in/images/mits.png" alt="">
+            </div>
+            <h1 class="logo-heading">MMS <span>Mohit Management system</span></h1>
+        </div>
+        <div class="options">
+            <button class="btn" id="bunkify">Bunkify</button>
+            <a href="./holidays.html"><button class="Calender btn">Calender</button></a>
+        </div>
+    </nav>
+  <main>
+    <section class="hero">
+      <div><h1>MP Holiday Calendar</h1><p class="subtitle">Madhya Pradesh · 2026 · Closed and restricted holidays</p></div>
+      <div class="controls">
+        <button id="prevMonth" type="button" aria-label="Previous month">←</button>
+        <label for="monthSelect" class="sr-only">Choose month</label>
+        <select id="monthSelect" aria-label="Choose month"></select>
+        <button id="nextMonth" type="button" aria-label="Next month">→</button>
+      </div>
+    </section>
+    <section class="stats" aria-label="Holiday summary">
+      <div class="stat closed"><span>Closed holidays</span><strong id="closedCount">—</strong></div>
+      <div class="stat restricted"><span>Restricted holidays</span><strong id="restrictedCount">—</strong></div>
+      <div class="stat upcoming"><span>Upcoming listed dates</span><strong id="upcomingCount">—</strong></div>
+    </section>
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-head"><h2>Calendar</h2><span class="month-label" id="monthHeading"></span></div>
+        <div class="weekdays" aria-hidden="true"><div class="weekday">Mon</div><div class="weekday">Tue</div><div class="weekday">Wed</div><div class="weekday">Thu</div><div class="weekday">Fri</div><div class="weekday">Sat</div><div class="weekday">Sun</div></div>
+        <div class="days" id="calendarDays" role="grid" aria-label="Monthly calendar"></div>
+        <div class="legend"><span><i class="swatch closed"></i> Closed holiday</span><span><i class="swatch restricted"></i> Restricted holiday</span><span>Outlined date = today</span></div>
+        <div class="details" id="dateDetails" aria-live="polite"><strong>Select a highlighted date</strong><p>Holiday details will appear here.</p></div>
+      </section>
+      <aside class="panel">
+        <div class="panel-head"><h2>Upcoming holidays</h2></div>
+        <div class="filters" aria-label="Filter holiday type">
+          <button class="filter" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter" data-filter="closed" aria-pressed="false">Closed</button>
+          <button class="filter" data-filter="restricted" aria-pressed="false">Restricted</button>
+        </div>
+        <div class="event-list" id="eventList"></div>
+      </aside>
+    </div>
+    <p class="note">Source: the MP Calendar 2026 image supplied for this project. This calendar is a reference only; confirm actual college closures and any changes with the college notice before relying on a date. Restricted holidays are not automatically college-wide closures.</p>
+  </main>
+  <script>
+    // Dates and names transcribed from the user's supplied MP Calendar 2026.
+    // If the college issues a separate notice, update this data to match it.
+    const holidays = [
+      ["2026-01-14","Makar Sankranti","closed"],
+      ["2026-01-26","Republic Day","closed"],
+      ["2026-03-04","Holi","closed"],
+      ["2026-03-21","Id-ul-Fitr","closed"],
+      ["2026-03-31","Mahavir Jayanti","closed"],
+      ["2026-04-03","Good Friday","closed"],
+      ["2026-05-01","Buddha Purnima","closed"],
+      ["2026-05-27","Id-ul-Zuha","closed"],
+      ["2026-06-26","Muharram","closed"],
+      ["2026-08-15","Independence Day","closed"],
+      ["2026-08-26","Id-e-Milad","closed"],
+      ["2026-09-09","Janmashtami","closed"],
+      ["2026-10-02","Gandhi Jayanti","closed"],
+      ["2026-10-20","Dussehra","closed"],
+      ["2026-11-08","Diwali","closed"],
+      ["2026-11-24","Guru Nanak Jayanti","closed"],
+      ["2026-12-25","Christmas Day","closed"],
+
+      ["2026-01-01","New Year Day","restricted"],
+      ["2026-01-03","Hazrat Ali's Birthday","restricted"],
+      ["2026-01-14","Magha Bihu/Pongal","restricted"],
+      ["2026-01-23","Basant Panchmi","restricted"],
+      ["2026-02-01","Guru Ravidas Birthday","restricted"],
+      ["2026-02-12","Dayanand Saraswati B'day","restricted"],
+      ["2026-02-15","Maha Shivratri","restricted"],
+      ["2026-02-19","Shivaji Jayanti","restricted"],
+      ["2026-03-03","Holika Dahan","restricted"],
+      ["2026-03-03","Dolyatra","restricted"],
+      ["2026-03-19","Cheti Chand","restricted"],
+      ["2026-03-20","Jamat Ul Vida","restricted"],
+      ["2026-03-26","Ram Navmi","restricted"],
+      ["2026-04-05","Easter Sunday","restricted"],
+      ["2026-04-14","Meshadi (Tamilnadu)","restricted"],
+      ["2026-04-15","Vaisakhadi/Bahag Bihu","restricted"],
+      ["2026-05-09","Rabindranath Tagore B'day","restricted"],
+      ["2026-07-16","Rath Yatra","restricted"],
+      ["2026-08-15","Parsi New Year","restricted"],
+      ["2026-08-26","Onam","restricted"],
+      ["2026-08-28","Raksha Bandhan","restricted"],
+      ["2026-09-14","Ganesh Chaturthi","restricted"],
+      ["2026-10-18","Maha Saptami","restricted"],
+      ["2026-10-19","Maha Ashtami","restricted"],
+      ["2026-10-20","Maha Navami","restricted"],
+      ["2026-10-26","Maharshi Valmiki B'day","restricted"],
+      ["2026-10-29","Karka Chaturthi","restricted"],
+      ["2026-11-08","Naraka Chaturdasi","restricted"],
+      ["2026-11-09","Govardhan Puja","restricted"],
+      ["2026-11-11","Bhai Duj","restricted"],
+      ["2026-11-15","Chhat Puja","restricted"],
+      ["2026-11-24","G. Tegh Bahadur Martyrdom","restricted"],
+      ["2026-12-23","Hazrat Ali's Birthday","restricted"],
+      ["2026-12-24","Christmas Evening","restricted"]
+    ].map(([date,name,type]) => ({date,name,type}));
+
+    const $ = id => document.getElementById(id);
+    const monthSelect = $("monthSelect");
+    const now = new Date();
+    const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+    let shownYear = 2026, shownMonth = (now.getFullYear() === 2026 ? now.getMonth() : 9), activeFilter = "all";
+    const monthName = (y,m) => new Date(y,m,1).toLocaleDateString("en-IN",{month:"long",year:"numeric"});
+    const fmtDate = key => new Date(key+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+    const monthKey = (y,m) => `${y}-${String(m+1).padStart(2,"0")}`;
+    function monthHolidays(y,m){return holidays.filter(h=>{const d=new Date(h.date+"T00:00:00");return d.getFullYear()===y&&d.getMonth()===m;});}
+    function setDetails(dateKey){
+      const items=holidays.filter(h=>h.date===dateKey);
+      $("dateDetails").replaceChildren();
+      const title=document.createElement("strong"); title.textContent=fmtDate(dateKey); $("dateDetails").append(title);
+      const p=document.createElement("p");
+      p.textContent=items.length ? items.map(h=>`${h.name} (${h.type==="closed"?"Closed holiday":"Restricted holiday"})`).join(" · ") : "No holiday is listed for this date.";
+      $("dateDetails").append(p);
+    }
+    function renderCalendar(){
+      $("monthHeading").textContent=monthName(shownYear,shownMonth);
+      monthSelect.value=monthKey(shownYear,shownMonth);
+      const grid=$("calendarDays");grid.replaceChildren();
+      const first=new Date(shownYear,shownMonth,1);
+      const offset=(first.getDay()+6)%7;
+      const total=new Date(shownYear,shownMonth+1,0).getDate();
+      for(let i=0;i<offset;i++){const e=document.createElement("div");e.className="day empty";e.setAttribute("aria-hidden","true");grid.append(e);}
+      for(let day=1;day<=total;day++){
+        const key=`${shownYear}-${String(shownMonth+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+        const items=holidays.filter(h=>h.date===key);
+        const types=new Set(items.map(h=>h.type));
+        const b=document.createElement("button");b.type="button";b.className="day";b.setAttribute("role","gridcell");
+        if(types.has("closed"))b.classList.add("closed");else if(types.has("restricted"))b.classList.add("restricted");
+        if(key===todayKey)b.classList.add("today");
+        b.setAttribute("aria-label",`${key}${items.length?": "+items.map(h=>h.name).join(", "):""}`);
+        const num=document.createElement("span");num.className="num";num.textContent=day;b.append(num);
+        if(items.length){const dot=document.createElement("i");dot.className="dot";dot.setAttribute("aria-hidden","true");b.append(dot);}
+        b.addEventListener("click",()=>setDetails(key));grid.append(b);
+      }
+      renderEvents();
+    }
+    function renderEvents(){
+      const list=$("eventList");list.replaceChildren();
+      const upcoming=holidays.filter(h=>h.date>=todayKey&&(activeFilter==="all"||h.type===activeFilter)).sort((a,b)=>a.date.localeCompare(b.date));
+      $("upcomingCount").textContent=holidays.filter(h=>h.date>=todayKey).length;
+      if(!upcoming.length){const p=document.createElement("div");p.className="empty-state";p.textContent="No upcoming holidays match this filter.";list.append(p);return;}
+      upcoming.forEach(h=>{
+        const d=new Date(h.date+"T00:00:00");
+        const card=document.createElement("article");card.className=`event ${h.type}`;
+        const date=document.createElement("div");date.className="date-box";
+        const mon=document.createElement("small");mon.textContent=d.toLocaleDateString("en-IN",{month:"short"}).toUpperCase();
+        const day=document.createElement("b");day.textContent=d.getDate();date.append(mon,day);
+        const info=document.createElement("div");info.style.minWidth="0";
+        const name=document.createElement("div");name.className="event-name";name.textContent=h.name;
+        const meta=document.createElement("div");meta.className="event-meta";meta.textContent=fmtDate(h.date);
+        const tag=document.createElement("span");tag.className=`tag ${h.type}`;tag.textContent=h.type==="closed"?"Closed holiday":"Restricted holiday";
+        info.append(name,meta,tag);card.append(date,info);
+        card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label",`${h.name}, ${fmtDate(h.date)}`);
+        card.addEventListener("click",()=>{shownYear=d.getFullYear();shownMonth=d.getMonth();renderCalendar();setDetails(h.date);});
+        card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
+        list.append(card);
+      });
+    }
+    for(let m=0;m<12;m++){const opt=document.createElement("option");opt.value=monthKey(2026,m);opt.textContent=monthName(2026,m);monthSelect.append(opt);}
+    monthSelect.addEventListener("change",()=>{const [y,m]=monthSelect.value.split("-").map(Number);shownYear=y;shownMonth=m-1;renderCalendar();});
+    $("prevMonth").addEventListener("click",()=>{if(shownMonth===0){shownMonth=11;shownYear--;}else shownMonth--;renderCalendar();});
+    $("nextMonth").addEventListener("click",()=>{if(shownMonth===11){shownMonth=0;shownYear++;}else shownMonth++;renderCalendar();});
+    document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{activeFilter=btn.dataset.filter;document.querySelectorAll("[data-filter]").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));renderEvents();}));
+    $("closedCount").textContent=holidays.filter(h=>h.type==="closed").length;
+    $("restrictedCount").textContent=holidays.filter(h=>h.type==="restricted").length;
+    // Start at the current month when the current year is 2026; otherwise start at October 2026.
+    renderCalendar();
+  </script>
+</body>
+</html>
